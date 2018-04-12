@@ -20,12 +20,7 @@
 )
 
 (defn define-counter [nam param condition]
-  (if condition
-    (do(add-counter-to-map nam 1)
-        ())
-    (do(add-counter-to-map nam 0)
-        ())
-  )
+
 )
 
 (defmulti current identity)

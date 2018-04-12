@@ -7,15 +7,7 @@
                                                      (current "important")] true)))
 
 (defn initialize-processor [rules]
-  (for [lst rules]
-      (if (= "define-counter" (str (first lst)))
-          (define-rule-counter (rest lst))
-          (if (= "define-signal" (str (first lst)))
-            (define-rule-signal (rest lst))
-            (println " ")
-          )
-      )
-  )
+
 )
 
 (defn define-rule-counter [data]
@@ -40,3 +32,16 @@
 (defn query-counter [state counter-name counter-args] 0
 
 )
+
+(def functions {"=" = "+" + "-" - "*" * "/" / "mod" mod "<" < ">" > "<=" <= ">=" >= "concat" str})
+
+(defn get-function [function]
+  ;Toma el operador pasado como parametro y llama a la funcion correspondiente
+ (get functions function)
+)
+
+(defn apply-operator [function param1 param2]
+  ;Aplica la funcion correspondiente del operator a los parametros
+(apply (get-function function) [param1 param2])
+)
+

@@ -1,36 +1,21 @@
-(ns data-processor)
+(ns data-processor (:require [counter-signals :as counter-signals]))
 
-(def rules '((define-counter "email-count" [] true)
-             (define-counter "spam-count" [] (current "spam"))
-             (define-signal {"spam-fraction" (/ (counter-value "spam-count" []) (counter-value "email-count" []))} true)
-             (define-counter "spam-important-table" [(current "spam") 
-                                                     (current "important")] true)))
-
+;Retorna un vector de diccionarios, donde el primero tiene a los contadores y sus valores, el 2do los elementos de los contadores, el 3ro las señales y sus elementos y el 4to almacenara info para current/past
 (defn initialize-processor [rules]
-
+  [(counter-signals/initialize-counters rules) (counter-signals/initialize-counters-elements rules) (counter-signals/initialize-signal-elements rules) {}]
 )
 
-(defn define-rule-counter [data]
-  (def name-counter (first data))
-  (def args (nth data 1))
-  (def condition (last data))
-  
-  (define-counter name-counter args condition)
+(defn get-counters-map [state] ;Retorna el primer diccionario de contadores y sus valores
+  (first state)
 )
 
-(defn define-rule-signal [data]
-  (def signal (first data))
-  (def condition (last data))
-  
-  (define-signal signal condition)
-)
-         
-(defn process-data [state new-data] [nil []]
+(defmulti counter-status (fn [value counter-args] (type value))) ;Retorna el valor de los contadores
+(defmethod counter-status clojure.lang.PersistentArrayMap [value counter-args] (get value counter-args))
+(defmethod counter-status java.lang.Long [value counter-args] value)
+(defmethod counter-status :default [value counter-args] 0)
 
-)
-         
-(defn query-counter [state counter-name counter-args] 0
-
+(defn query-counter [state counter-name counter-args]
+  (let [value (get (get-counters-map state) counter-name)] (counter-status value counter-args))
 )
 
 (def functions {"=" = "+" + "-" - "*" * "/" / "mod" mod "<" < ">" > "<=" <= ">=" >= "concat" str})
